@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>EverUs ♡ — Our World. Our Story.</title>
@@ -179,7 +180,7 @@ const toast = document.getElementById("toast");
 
 // TEST MODE ONLY: keep visit/submission data in this browser.
 const VISITS_KEY = "everus_test_visits";
-const LEADS_KEY = "everus_test_leads";
+const LEADS_KEY = "localStorage";
 
 const visits = Number(localStorage.getItem(VISITS_KEY) || 0) + 1;
 localStorage.setItem(VISITS_KEY, String(visits));
@@ -225,6 +226,14 @@ form.addEventListener("submit", e=>{
 
   toastMsg("Your EverUs journey begins ♡");
   setTimeout(()=>location.href=GAME_URL,650);
+const SUPABASE_URL = "https://swmoziplqrvydnzvmxat.supabase.co";
+const SUPABASE_KEY = "sb_publishable_wcSxr7H7ZHe7RQmDWlC-0A_FDCx4sGq
+";
+
+const supabase = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 });
 </script>
 </body>
